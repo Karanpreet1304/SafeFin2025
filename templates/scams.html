@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block body %}
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    (function() {
+        'use strict';
+        // This sets the prefix for all Tailwind classes to 'tw-'
+        tailwind.config = {prefix: 'tw-'}; 
+        console.log('tailwind.');
+    })();
+    </script>
+    
+    <style>
+        /* The CSS animation definition for blinking */
+        @keyframes blink {
+            0% {
+                opacity: 1; /* Fully visible */
+            }
+            50% {
+                opacity: 0; /* Fully invisible (hidden) */
+            }
+            100% {
+                opacity: 1; 
+            }
+        }
+
+        /* The class that applies the animation */
+        .tw-blinking-text {
+            /* * Animation properties:
+             * name: blink
+             * duration: 0.8s
+             * timing: step-end (instant on/off)
+             * iteration: infinite
+             */
+            animation: blink 0.8s step-end infinite; 
+        }
+    </style>
+
+
+    <div class="
+        tw-coming-soon 
+        tw-text-red-600 
+        tw-text-6xl 
+        tw-font-black 
+        tw-tracking-wider 
+        tw-blinking-text
+    ">
+        Coming soon
+    </div>
+
+
+{% endblock %}

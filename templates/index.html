@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block body %}
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    (function() {
+        'use strict';
+        tailwind.config = {prefix: 'tw-'};
+        console.log('tailwind.');
+    })();
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .tw-hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            color: white;
+        }
+        .tw-hero h1 {
+            margin: 0;
+            font-size: 3em;
+        }
+        .tw-hero p {
+            font-size: 1.3em;
+            margin: 20px 0;
+        }
+        .tw-cta-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .tw-cta-button:hover {
+            background-color: #218838;
+        }
+        .tw-features {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: white;
+        }
+        .tw-features h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .tw-feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tw-feature {
+            background-color: #f8f9fa;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tw-feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #007bff, #28a745);
+        }
+        .tw-feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .tw-feature-icon {
+            font-size: 3em;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        .tw-feature h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .tw-feature p {
+            margin: 0;
+            line-height: 1.6;
+        }
+        .tw-why-choose {
+            padding: 50px 20px;
+            background-color: #e9ecef;
+            text-align: center;
+        }
+        .tw-why-choose h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .tw-why-choose-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tw-why-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tw-why-item h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .tw-testimonials {
+            padding: 50px 20px;
+            background-color: white;
+            text-align: center;
+        }
+        .tw-testimonials h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .tw-testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tw-testimonial {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-style: italic;
+        }
+        .tw-testimonial p {
+            margin: 0 0 10px 0;
+        }
+        .tw-testimonial cite {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .tw-news-tips {
+            padding: 50px 20px;
+            background-color: #e9ecef;
+            text-align: center;
+        }
+        .tw-news-tips h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .tw-news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tw-news-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tw-news-item h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .tw-news-item p {
+            margin: 0;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        footer p {
+            margin: 0;
+        }
+    </style>
+
+<body>
+    <section class="tw-hero">
+        <h1>Welcome to SafeFin</h1>
+        <p>Empower yourself with financial knowledge. Learn budgeting, avoid scams, and calculate your financial future with our easy-to-use tools.</p>
+        <a href="#" class="tw-cta-button">Start Learning Now</a>
+    </section>
+    
+    <section class="tw-features">
+        <h2>Explore Our Features</h2>
+        <div class="tw-feature-grid">
+    <a href="{% url 'learn' %}" class="tw-feature">
+        <div class="tw-feature-icon">📚</div>
+        <h3>Learn</h3>
+        <p>Access comprehensive guides on personal finance, investing, and saving strategies to build a strong financial foundation.</p>
+    </a>
+    <a href="{% url 'scams' %}" class="tw-feature">
+        <div class="tw-feature-icon">🛡️</div>
+        <h3>Scams</h3>
+        <p>Stay informed about common financial scams and learn how to protect yourself from fraud and identity theft.</p>
+    </a>
+    <a href="{% url 'calculator' %}" class="tw-feature">
+        <div class="tw-feature-icon">🧮</div>
+        <h3>Calculator</h3>
+        <p>Use our interactive calculators for budgeting, loan payments, retirement planning, and more to make informed decisions.</p>
+    </a>
+    <a href="{% url 'contact' %}" class="tw-feature">
+        <div class="tw-feature-icon">📞</div>
+        <h3>Contact Us</h3>
+        <p>Have questions? Reach out to our support team for personalized advice and assistance.</p>
+    </a>
+</div>
+
+    </section>
+    
+    <section class="tw-why-choose">
+        <h2>Why Choose SafeFin?</h2>
+        <div class="tw-why-choose-grid">
+            <div class="tw-why-item">
+                <h3>Expert Guidance</h3>
+                <p>Our content is created by financial experts to ensure accuracy and reliability.</p>
+            </div>
+            <div class="tw-why-item">
+                <h3>User-Friendly Tools</h3>
+                <p>Simple, intuitive interfaces make learning and calculating easy for everyone.</p>
+            </div>
+            <div class="tw-why-item">
+                <h3>Free Access</h3>
+                <p>All our resources are free to use, empowering users without any cost barriers.</p>
+            </div>
+            <div class="tw-why-item">
+                <h3>Community Support</h3>
+                <p>Join a community of learners sharing tips and experiences for better financial health.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="tw-testimonials">
+        <h2>What Our Users Say</h2>
+        <div class="tw-testimonial-grid">
+            <div class="tw-testimonial">
+                <p>"SafeFin helped me understand budgeting in a fun way. I've saved more money than ever!"</p>
+                <cite>- Alex Johnson</cite>
+            </div>
+            <div class="tw-testimonial">
+                <p>"The scam alerts are a lifesaver. I avoided a potential fraud thanks to SafeFin."</p>
+                <cite>- Maria Garcia</cite>
+            </div>
+            <div class="tw-testimonial">
+                <p>"The calculators are precise and easy to use. Planning my retirement was never this straightforward."</p>
+                <cite>- David Lee</cite>
+            </div>
+        </div>
+    </section>
+    
+    <section class="tw-news-tips">
+        <h2>Latest Financial Tips & News</h2>
+        <div class="tw-news-grid">
+            <div class="tw-news-item">
+                <h3>Top 5 Budgeting Apps for 2023</h3>
+                <p>Discover the best apps to help you track expenses and stick to your budget.</p>
+            </div>
+            <div class="tw-news-item">
+                <h3>How to Spot Investment Scams</h3>
+                <p>Learn the red flags of fraudulent investment schemes and protect your money.</p>
+            </div>
+            <div class="tw-news-item">
+                <h3>Retirement Planning Essentials</h3>
+                <p>Key steps to start saving for retirement early and build a secure future.</p>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2023 SafeFin. All rights reserved. | Privacy Policy | Terms of Service</p>
+    </footer>
+</body>
+</html>
+
+{% endblock body %}
+
