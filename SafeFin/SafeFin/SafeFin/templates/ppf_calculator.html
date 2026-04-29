@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block body %}
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+(function() {
+    'use strict';
+    tailwind.config = {prefix: 'tw-'};
+    console.log('tailwind.');
+})();
+
+
+</script>
+<!-- Chart.js CDN for Doughnut Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    /* Custom font and base styles */
+    body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
+    
+    /* Custom styling for the range input (slider) to match the image aesthetics */
+    input[type=range] {
+        /* -webkit-appearance: none; */
+        width: 100%;
+        height: 4px; /* Line thickness */
+        background: #e0e0e0;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+        border-radius: 2px;
+    }
+
+    input[type=range]:hover { opacity: 1; }
+
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%; 
+        background: #C06C47; /* Primary color from image */
+        cursor: pointer;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type=range]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #C06C47;
+        cursor: pointer;
+    }
+</style>
+
+<!-- Main Layout: Larger Chart and Results on Left, Inputs on Right -->
+<div class="tw-flex tw-flex-row tw-lg:tw-flex-row tw-gap-6 tw-lg:tw-gap-8 tw-items-start" style="margin:50px">
+    
+    <!-- Left Side: Doughnut Chart and Results Under It -->
+    <div class="tw-w-full tw-lg:tw-w-6/12 tw-flex tw-flex-col tw-items-center">  <!-- Adjusted for balance -->
+        <div class="tw-w-full tw-max-w-md tw-mb-6">  <!-- Corrected to max-w-xl for larger chart -->
+            <canvas id="ppfDoughnutChart"></canvas>
+        </div>
+        <!-- Legend -->
+        <div class="tw-flex tw-justify-center tw-space-x-6 tw-text-sm tw-font-medium tw-mb-6">
+            <div class="tw-flex tw-items-center">
+                <span class="tw-w-3 tw-h-3 tw-rounded-full tw-mr-2" style="background-color: #E6A290;"></span>
+                <span class="tw-text-gray-600">Invested Amount</span>
+            </div>
+            <div class="tw-flex tw-items-center">
+                <span class="tw-w-3 tw-h-3 tw-rounded-full tw-mr-2" style="background-color: #C06C47;"></span>
+                <span class="tw-text-gray-600">Estimated Returns</span>
+            </div>
+        </div>
+        <!-- Results Display (Under the Doughnut Chart) -->
+        <div class="tw-w-full tw-max-w-md tw-space-y-3 tw-pt-4 tw-border-t tw-border-gray-200 tw-bg-white tw-p-4 tw-rounded-lg tw-shadow-md">
+            <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-700">
+                <span class="tw-text-lg tw-font-semibold">Total Invested:</span>
+                <span id="totalInvested" class="tw-text-xl tw-font-bold tw-text-gray-800">₹0</span>
+            </div>
+            <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-700">
+                <span class="tw-text-lg tw-font-semibold">Returns:</span>
+                <span id="totalReturns" class="tw-text-xl tw-font-bold tw-text-green-600">₹0</span>
+            </div>
+            <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-700 tw-pt-3">
+                <span id="futureValueLabel" class="tw-text-lg tw-font-semibold">Maturity Value:</span>
+                <span id="futureValue" class="tw-text-2xl tw-font-extrabold tw-text-[#C06C47]">₹0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Calculator Card (Inputs and Button Only) -->
+    <div class="tw-w-full tw-lg:tw-w-6/12" style="justify-self: center; align-self: center;">  <!-- Adjusted for balance -->
+        <div class="tw-calculator-card tw-bg-white tw-p-6 tw-md:tw-p-8 tw-rounded-xl tw-shadow-2xl">
+            <header class="tw-mb-6">
+                <h1 class="tw-text-2xl tw-sm:tw-text-3xl tw-font-bold tw-text-gray-800 tw-tracking-tight">Public Provident Fund Calculator</h1>
+                <p class="tw-text-sm tw-text-gray-500 tw-mt-1">Long-term Savings Scheme (Maturity Value)</p>
+            </header>
+
+            <!-- Input Controls -->
+            <div class="tw-space-y-6">
+                
+                <!-- Input Group: Annual Investment -->
+                <div class="tw-input-group">
+                    <label for="annualInvestment" class="tw-text-base tw-font-medium tw-text-gray-700 tw-block tw-mb-3">Annual Investment (P)</label>
+                    <div class="tw-flex tw-items-center tw-space-x-4">
+                        <input type="range" id="investmentSlider" min="500" max="150000" step="500" value="50000" oninput="syncInputs('investment')">
+                        <input type="number" id="annualInvestment" min="500" max="150000" value="50000" 
+                               class="tw-w-32 tw-p-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-lg tw-text-right tw-font-mono" oninput="syncInputs('investment')">
+                        <span class="tw-text-xl tw-font-semibold tw-text-gray-600">Rs.</span>       
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-text-sm tw-text-gray-500 tw-mt-1">
+                        <span>₹500</span>
+                        <span>₹1,50,000</span>
+                    </div>
+                </div>
+
+                <!-- Input Group: Expected Return Rate -->
+                <div class="tw-input-group">
+                    <label for="returnRate" class="tw-text-base tw-font-medium tw-text-gray-700 tw-block tw-mb-3">Expected Return Rate (R) (p.a.)</label>
+                    <div class="tw-flex tw-items-center tw-space-x-4">
+                        <input type="range" id="rateSlider" min="1" max="10" step="0.1" value="7.1" oninput="syncInputs('rate')">
+                        <input type="number" id="returnRate" min="1" max="10" step="0.1" value="7.1" 
+                               class="tw-w-32 tw-p-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-lg tw-text-right tw-font-mono" oninput="syncInputs('rate')">
+                        <span class="tw-text-xl tw-font-semibold tw-text-gray-600"> % </span>
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-text-sm tw-text-gray-500 tw-mt-1">
+                        <span>1%</span>
+                        <span>10%</span>
+                    </div>
+                </div>
+
+                <!-- Input Group: Time Period -->
+                <div class="tw-input-group">
+                    <label for="timePeriod" class="tw-text-base tw-font-medium tw-text-gray-700 tw-block tw-mb-3">Time Period (T) (in Years)</label>
+                    <div class="tw-flex tw-items-center tw-space-x-4">
+                        <input type="range" id="timeSlider" min="15" max="50" step="1" value="15" oninput="syncInputs('time')">
+                        <input type="number" id="timePeriod" min="15" max="50" value="15" 
+                               class="tw-w-32 tw-p-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-lg tw-text-right tw-font-mono" oninput="syncInputs('time')">
+                        <span class="tw-text-xl tw-font-semibold tw-text-gray-600">Yrs</span>
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-text-sm tw-text-gray-500 tw-mt-1">
+                        <span>15 Years</span>
+                        <span>50 Years</span>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="tw-text-center">
+                    <button onclick="calculatePPF()" class="tw-bg-[#C06C47] tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-semibold tw-text-lg tw-hover:tw-bg-[#A0553A] tw-transition">Calculate</button>
+                    <p class="tw-text-sm tw-text-gray-500 tw-mt-2">Adjust inputs above, then click to calculate and update the chart and values.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let ppfChart;
+
+    // Colors matching the image: #C06C47 (darker, for returns) and #E6A290 (lighter, for investment)
+    const PRIMARY_COLOR = '#C06C47'; 
+    const SECONDARY_COLOR = '#E6A290'; 
+
+    // Function to initialize the Chart.js doughnut chart
+    function initChart() {
+        const ctx = document.getElementById('ppfDoughnutChart').getContext('2d');
+        ppfChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Invested Amount', 'Estimated Returns'],
+                datasets: [{
+                    data: [50, 50], // Initial dummy data
+                    backgroundColor: [SECONDARY_COLOR, PRIMARY_COLOR],
+                    hoverBackgroundColor: [SECONDARY_COLOR, PRIMARY_COLOR],
+                    borderWidth: 0,
+                    cutout: '75%', // Doughnut size
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }, // Use custom legend outside the chart
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return ` ${context.label}: ₹${value.toLocaleString('en-IN')} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                // Disable animation on update to prevent Cumulative Layout Shifts (CLS)
+                animation: false,
+            }
+        });
+    }
+
+    // Utility function to format numbers in Indian Rupee format
+    function formatRupee(number) {
+        return `₹${Math.round(number).toLocaleString('en-IN')}`;
+    }
+
+    // Function to sync sliders and text inputs in real-time (but no calculation)
+    function syncInputs(type) {
+        if (type === 'investment') {
+            document.getElementById('annualInvestment').value = document.getElementById('investmentSlider').value;
+        } else if (type === 'rate') {
+            document.getElementById('returnRate').value = document.getElementById('rateSlider').value;
+        } else if (type === 'time') {
+            document.getElementById('timePeriod').value = document.getElementById('timeSlider').value;
+        }
+    }
+
+    // Main calculation function (triggered by button) for PPF
+    function calculatePPF() {
+        console.log('Calculate button clicked'); // Debug log
+
+        // Get inputs
+        const P = parseFloat(document.getElementById('annualInvestment').value) || 0;
+        const R_annual = parseFloat(document.getElementById('returnRate').value) || 0;
+        const T_years = parseInt(document.getElementById('timePeriod').value) || 0;
+
+        console.log('Inputs:', P, R_annual, T_years); // Debug log
+
+        // Financial Calculations for PPF: Future Value of Annuity (annual payments)
+        // FV = P * [((1 + r)^n - 1) / r]
+        const r = R_annual / 100;
+        let futureValue = 0;
+        const totalInvested = P * T_years;
+
+        if (r > 0) {
+            futureValue = P * ((Math.pow(1 + r, T_years) - 1) / r);
+        } else {
+            futureValue = totalInvested;
+        }
+
+        const totalReturns = futureValue - totalInvested;
+
+        console.log('Results:', totalInvested, totalReturns, futureValue); // Debug log
+
+        // Update UI (Results Under the Doughnut Chart)
+        document.getElementById('totalInvested').innerText = formatRupee(totalInvested);
+        document.getElementById('totalReturns').innerText = formatRupee(totalReturns);
+        document.getElementById('futureValue').innerText = formatRupee(futureValue);
+        
+        // Update Chart
+        updateChart(totalInvested, totalReturns);
+    }
+
+    function updateChart(invested, returns) {
+        if (ppfChart) {
+            ppfChart.data.datasets[0].data = [invested, returns];
+            ppfChart.update();
+            console.log('Chart updated'); // Debug log
+        } else {
+            console.error('Chart not initialized'); // Debug log
+        }
+    }
+
+    // Initialize on page load
+    window.onload = function() {
+        initChart();
+        calculatePPF(); // Initial calculation
+    };
+</script>
+
+
+{% endblock %}
