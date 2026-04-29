@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block body %}
+
+<div class="container" style="max-width: 50%; margin-top: 30px;">
+  <h1 class="text-center mb-5">Contact Us</h1>
+<!-- 
+  class="shadow p-4 rounded bg-white" -->
+  <form method="post" action="{% url 'contact' %}" >
+    {% csrf_token %}
+    
+    <div class="form-group mb-4">
+      <label for="name" class="mb-2 fw-semibold">Name</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name">
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="email" class="mb-2 fw-semibold">Email address</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email">
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="phone" class="mb-2 fw-semibold">Phone No.</label>
+      <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your Phone Number">
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="description" class="mb-2 fw-semibold">Tell me about, what you want to contact me for...</label>
+      <textarea class="form-control" id="description" name="description" rows="3" placeholder="Your message..."></textarea>
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary px-4">Submit</button>
+    </div>
+  </form>
+</div>
+
+  <!-- ✅ SUCCESS MESSAGE -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show d-block mx-auto" style="margin-top: 30px; width: 40%;" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+{% endblock body %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% extends "base.html" %}
+{% block body %}
+
+<div class="container my-5" >
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+
+        <div class="col">
+            <a href="{% url 'sip_calculator' %}" class="text-decoration-none text-dark d-block h-100">
+                <div class="card p-4 h-100 border-0 shadow-sm" style="background-color: #fff4f4; border-radius: 12px; transition: transform 0.2s; cursor: pointer;">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="p-3 me-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff990022; width: 60px; height: 60px; flex-shrink: 0;">
+                                <span style="font-size: 2rem; color: #FF9900;">📶
+                                </span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-subtitle mb-1 text-danger" style="font-weight: 600;">SIP Calculator</h5>
+                                <h3 class="card-title fw-bold mb-1">Systematic Investment Plan</h3>
+                                <p class="card-text text-muted mb-0">
+                                    Calculate how much you need to save or how much you will accumulate with your SIP
+                                </p>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'mf_calculator' %}" class="text-decoration-none text-dark d-block h-100">
+                <div class="card p-4 h-100 border-0 shadow-sm" style="background-color: #fffce5; border-radius: 12px; transition: transform 0.2s; cursor: pointer;">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3 mt-4">
+                            <div class="p-3 me-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ffcc0022; width: 60px; height: 60px; flex-shrink: 0;">
+                                <span style="font-size: 2rem; color: #FFCC00;">🔠</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-subtitle mb-1 text-primary" style="font-weight: 600;">Mutual Funds</h5>
+                                <h3 class="card-title fw-bold mb-1">Mutual Fund Investment</h3>
+                                <p class="card-text text-muted mb-0">
+                                    Calculate the returns on your Mutual Fund investment
+                                </p>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'ppf_calculator' %}" class="text-decoration-none text-dark d-block h-100">
+                <div class="card p-4 h-100 border-0 shadow-sm" style="background-color: #f4f6ff; border-radius: 12px; transition: transform 0.2s; cursor: pointer;">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3 mt-4">
+                            <div class="p-3 me-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: #007bff22; width: 60px; height: 60px; flex-shrink: 0;">
+                                <span style="font-size: 2rem; color: #007BFF;">➕</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-subtitle mb-1 text-danger" style="font-weight: 600;">PPF Calculator</h5>
+                                <h3 class="card-title fw-bold mb-1">Public provident Fund</h3>
+                                <p class="card-text text-muted mb-0">
+                                    Calculate your returns on Public Provident Fund(PPF)
+                                </p>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'swp_calculator' %}" class="text-decoration-none text-dark d-block h-100">
+                <div class="card p-4 h-100 border-0 shadow-sm" style="background-color: #fff6f4; border-radius: 12px; transition: transform 0.2s; cursor: pointer;">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3 mt-4">
+                            <div class="p-3 me-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: #dc354522; width: 60px; height: 60px; flex-shrink: 0;">
+                                <span style="font-size: 2rem; color: #DC3545;">🚀</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-subtitle mb-1 text-primary" style="font-weight: 600;">SWP Calculator</h5>
+                                <h3 class="card-title fw-bold mb-1">Systematic Withdrawl Plan</h3>
+                                <p class="card-text text-muted mb-0">
+                                    Calculate your final amount with systematic Withdrawl Plan(SWP)
+                                </p>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- bottom -->
+<div class="market-widget">
+    <!--
+        The <style> block is included here to ensure the animation (@keyframes)
+        and layout rules are defined within the scope of this widget snippet.
+    -->
+    <style>
+        .market-widget {
+            width: 100%; /* Full screen width */
+            height: 130px; /* Adjusted height for status bar + graph container */
+            margin: 0; /* Remove margin */
+            border-radius: 0; /* No rounded corners for full-width bar */
+            box-shadow: none; /* Remove shadow */
+            overflow: hidden; 
+            background-color: #ffffff; /* Solid background for the bar */
+            
+            /* Fixed Positioning to cover the entire bottom of the viewport */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 9999; /* Ensure it stays on top of other content */
+
+            /* Flex properties stack content and push it to the bottom */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            font-family: Arial, sans-serif;
+        }
+
+        .status-bar {
+            width: 100%;
+            padding: 8px 15px;
+            background-color: #3498db; 
+            color: white;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 2; 
+        }
+
+        .market-trend-container {
+            width: 100%;
+            height: 100px; 
+            overflow: hidden;
+            position: relative;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .market-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 300%; 
+            height: 100%;
+            animation: moveGraph 10s linear infinite;
+        }
+
+        /* Animation Keyframes (Crucial for the moving effect) */
+        @keyframes moveGraph {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-66.66%); }
+        }
+
+        .trend-line {
+            fill: none;
+            stroke: #2ecc71; 
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+    </style>
+
+    <!-- The title/preview block has been removed to create a clean fixed bar. -->
+
+    <div class="status-bar">
+        📈 Global Index: **UP 0.85%** Today!
+    </div>
+
+    <div class="market-trend-container">
+        <svg class="market-line" viewBox="0 0 3000 100" preserveAspectRatio="none">
+            <path class="trend-line" 
+                d="
+                    M 0 80 
+                    C 100 60, 200 85, 300 70 
+                    C 400 55, 500 75, 600 65 
+                    C 700 50, 800 70, 900 60 
+                    C 1000 45, 1100 65, 1200 55 
+                    C 1300 40, 1400 60, 1500 50 
+                    C 1600 35, 1700 55, 1800 45 
+                    C 1900 30, 2000 50, 2100 40 
+                    C 2200 25, 2300 45, 2400 35 
+                    C 2500 20, 2600 40, 2700 30 
+                    C 2800 15, 2900 35, 3000 25 
+                " />
+        </svg>
+    </div>
+
+</div>
+
+
+{% endblock %}

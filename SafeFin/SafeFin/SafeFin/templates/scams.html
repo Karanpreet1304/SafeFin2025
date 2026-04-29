@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block body %}
+
+<style>
+/* BEFORE CLICK (GRID VIEW) */
+.learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.learn-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 40px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    min-height: 120px;
+}
+
+.learn-card:hover {
+    transform: translateY(-6px);
+}
+
+.learn-card h3 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.learn-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* AFTER CLICK LAYOUT */
+.container-flex {
+    display: none;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 150px);
+    box-sizing: border-box;
+}
+
+/* LEFT SIDEBAR */
+.sidebar {
+    width: 32%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Hide buttons in sidebar */
+.sidebar .learn-btn {
+    display: none !important;
+}
+
+/* RIGHT CONTENT PANEL */
+.content-panel {
+    width: 68%;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+
+    overflow-y: auto;
+    display: none;
+    box-sizing: border-box;
+}
+
+.content-panel.active {
+    display: block;
+}
+
+/* Custom scrollbars */
+.sidebar::-webkit-scrollbar,
+.content-panel::-webkit-scrollbar {
+    width: 8px;
+}
+.sidebar::-webkit-scrollbar-thumb,
+.content-panel::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-track,
+.content-panel::-webkit-scrollbar-track {
+    background: #e5e5e5;
+}
+
+/* Typing text container */
+#typing-container {
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Responsive behavior */
+@media (max-width: 900px) {
+    .container-flex { flex-direction: column; height: auto; }
+    .sidebar, .content-panel { width: 100%; }
+}
+</style>
+
+<!-- HEADER -->
+<div class="header" style="background: linear-gradient(to right, #007bff, #0056b3); padding:20px; text-align:center; color:white;">
+    <h1>Scam Awareness</h1>
+    <p>Stay alert and protect yourself from the latest financial scams</p>
+</div>
+
+<!-- BEFORE CLICK GRID -->
+<div id="grid-view" class="learn-grid" style="padding-left:150px; padding-right:150px;">
+
+    <div class="learn-card" onclick="activateLearning('upi')">
+        <h3>UPI Fraud</h3>
+        <p>Fake payment requests & QR scams</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('kyc')">
+        <h3>KYC Update Scam</h3>
+        <p>Fake SMS claiming KYC expiry</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('loan')">
+        <h3>Loan Scam</h3>
+        <p>Fake instant-loan apps</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('phishing')">
+        <h3>Phishing Emails</h3>
+        <p>Fake bank & government messages</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('investment')">
+        <h3>Investment Scam</h3>
+        <p>Guaranteed return frauds</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('job')">
+        <h3>Job Offer Scam</h3>
+        <p>Fake HR messages & paid interviews</p>
+        <a class="learn-btn">Learn More</a>
+    </div>
+
+</div>
+
+<!-- AFTER CLICK: SIDEBAR + CONTENT -->
+<div id="learning-layout" class="container-flex">
+    <div id="sidebar" class="sidebar"></div>
+
+    <div id="content-panel" class="content-panel">
+        <div id="typing-container"></div>
+    </div>
+</div>
+
+<script>
+let typingInterval = null;
+
+/* SWITCH TO SIDEBAR LAYOUT */
+function activateLearning(topic) {
+
+    const grid = document.getElementById("grid-view");
+    const layout = document.getElementById("learning-layout");
+
+    if (grid.style.display !== "none") {
+        grid.style.display = "none";
+        layout.style.display = "flex";
+
+        // Move cards to sidebar
+        const sidebar = document.getElementById("sidebar");
+        const cards = document.querySelectorAll(".learn-card");
+        cards.forEach(card => sidebar.appendChild(card));
+    }
+
+    document.getElementById("content-panel").classList.add("active");
+    loadContent(topic);
+}
+
+/* TYPING EFFECT */
+function typeText(text, elementId, speed = 16) {
+
+    if (typingInterval) {
+        clearInterval(typingInterval);
+        typingInterval = null;
+    }
+
+    const element = document.getElementById(elementId);
+    element.innerHTML = "";
+    let i = 0;
+
+    typingInterval = setInterval(() => {
+        if (i < text.length) {
+            element.innerHTML = text.substring(0, i);
+            i++;
+        } else {
+            clearInterval(typingInterval);
+            typingInterval = null;
+        }
+    }, speed);
+}
+
+/* CONTENT FOR EACH SCAM */
+function loadContent(topic) {
+    let content = "";
+
+    if (topic === "upi") {
+        content =
+`<h2>🔶 UPI Fraud</h2>
+<p>
+UPI frauds are rising because instant payments make it easier for scammers to trick users. Fraudsters use fake requests, QR codes, and screen-sharing apps to access your bank account.
+
+<b>Common Tactics:</b><br>
+• Fake collect requests pretending to send money<br>
+• QR code scams that actually deduct funds<br>
+• Remote access via apps like AnyDesk<br>
+• Fake support calls claiming to fix UPI issues<br><br>
+
+<b>Stay Safe:</b><br>
+Never enter your UPI PIN to <i>receive</i> money, avoid unknown QR codes, and never share OTPs.
+</p>`;
+    }
+
+    else if (topic === "kyc") {
+        content =
+`<h2>📌 KYC Update Scam</h2>
+<p>
+KYC scams use fake SMS or calls claiming your bank account will be blocked unless you update your KYC immediately. These links usually steal personal and banking information.
+
+<b>How Scammers Operate:</b><br>
+• Fake SMS claiming “KYC expired”<br>
+• Calls pretending to be bank officers<br>
+• Asking for OTP, Aadhaar, PAN<br>
+• Links to cloned bank websites<br><br>
+
+<b>Stay Safe:</b><br>
+Banks never ask to update KYC via SMS links. Always use the official bank app or visit a branch.
+</p>`;
+    }
+
+    else if (topic === "loan") {
+        content =
+`<h2>💰 Loan Scam</h2>
+<p>
+Loan scams target people needing urgent money. Fraudsters offer instant loans with “zero paperwork” and once the user agrees, they demand upfront fees—then disappear.
+
+<b>Scam Indicators:</b><br>
+• Apps not registered with RBI/NBFC<br>
+• Upfront fees like GST or processing charges<br>
+• Threatening messages for rejection<br>
+• Suspicious app permissions<br><br>
+
+<b>Stay Safe:</b><br>
+Legitimate lenders never take any fee before approving a loan. Always check RBI’s approved list.
+</p>`;
+    }
+
+    else if (topic === "phishing") {
+        content =
+`<h2>📧 Phishing Emails</h2>
+<p>
+Phishing emails pretend to be from banks or government agencies. They create urgency to make you click fake links or download malware.
+
+<b>Watch Out For:</b><br>
+• Fake login pages<br>
+• Suspicious attachments<br>
+• Slightly altered sender IDs<br>
+• Messages claiming account suspension<br><br>
+
+<b>Stay Safe:</b><br>
+Never click unknown links. Type the website manually and avoid sharing sensitive information over email.
+</p>`;
+    }
+
+    else if (topic === "investment") {
+        content =
+`<h2>📈 Investment Scam</h2>
+<p>
+Investment scams promise guaranteed profits, show fake screenshots, and pressure users to invest fast.
+
+<b>Red Flags:</b><br>
+• Guaranteed returns<br>
+• Unregistered advisors<br>
+• Ponzi schemes<br>
+• Urgency to invest immediately<br><br>
+
+<b>Stay Safe:</b><br>
+Always verify SEBI registration and avoid unrealistic returns.
+</p>`;
+    }
+
+    else if (topic === "job") {
+        content =
+`<h2>🧑‍💼 Job Offer Scam</h2>
+<p>
+Job scams appear as high-paying easy jobs. After gaining trust, scammers demand registration or training fees.
+
+<b>How It Works:</b><br>
+• Fake HR messages on WhatsApp<br>
+• No real interview process<br>
+• Asking for upfront fees<br>
+• Task-based earning scams requiring deposits<br><br>
+
+<b>Stay Safe:</b><br>
+Legit companies never charge candidates. Always verify recruiters before sharing documents.
+</p>`;
+    }
+
+    typeText(content, "typing-container");
+}
+</script>
+
+{% endblock %}

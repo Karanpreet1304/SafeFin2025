@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% block body %}
+
+<style>
+/* BEFORE CLICK (GRID VIEW) */
+.learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.learn-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 40px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    min-height: 120px;
+}
+
+.learn-card:hover {
+    transform: translateY(-6px);
+}
+
+.learn-card h3 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.learn-card p {
+    margin: 0 0 12px 0;
+}
+
+.learn-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* AFTER CLICK LAYOUT */
+.container-flex {
+    display: none;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 150px); /* reserves space for header */
+    box-sizing: border-box;
+}
+
+/* LEFT SIDEBAR */
+.sidebar {
+    width: 32%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Hide buttons in sidebar */
+.sidebar .learn-btn {
+    display: none !important;
+}
+
+/* RIGHT CONTENT PANEL */
+.content-panel {
+    width: 68%;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+
+    overflow-y: auto;
+    display: none;
+    box-sizing: border-box;
+}
+
+.content-panel.active {
+    display: block;
+}
+
+/* Custom scrollbars (webkit) */
+.sidebar::-webkit-scrollbar,
+.content-panel::-webkit-scrollbar {
+    width: 8px;
+}
+.sidebar::-webkit-scrollbar-thumb,
+.content-panel::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-track,
+.content-panel::-webkit-scrollbar-track {
+    background: #e5e5e5;
+}
+
+/* Typing animation container */
+#typing-container {
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Small responsive tweak */
+@media (max-width: 900px) {
+    .container-flex { flex-direction: column; height: auto; }
+    .sidebar, .content-panel { width: 100%; }
+}
+</style>
+
+<!-- HEADER -->
+<div class="header" style="background: linear-gradient(to right, #007bff, #0056b3); padding:20px; text-align:center; color:white;">
+    <h1>Learn Financial Literacy</h1>
+    <p>Build your knowledge with interactive lessons and articles</p>
+</div>
+
+<!-- BEFORE CLICK: GRID VIEW -->
+<div id="grid-view" class="learn-grid" style="padding-left: 150px; padding-right: 150px;">
+
+    <div class="learn-card" onclick="activateLearning('credit')">
+        <h3>Understanding Credit Scores</h3>
+        <p>How credit affects your finances</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('investing')">
+        <h3>Investing for Beginners</h3>
+        <p>Start with stocks and bonds</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('debt')">
+        <h3>Debt Management Tips</h3>
+        <p>Strategies to pay off loans faster</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('retirement')">
+        <h3>Retirement Planning</h3>
+        <p>Secure your future with 401(k)s and IRAs</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('emergency')">
+        <h3>Emergency Fund Basics</h3>
+        <p>Build 3–6 months of savings</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+    <div class="learn-card" onclick="activateLearning('scams')">
+        <h3>Avoiding Financial Scams</h3>
+        <p>Protect yourself from fraud</p>
+        <a class="learn-btn">Start Lesson</a>
+    </div>
+
+</div>
+
+<!-- AFTER CLICK: SIDEBAR + CONTENT -->
+<div id="learning-layout" class="container-flex">
+    <div id="sidebar" class="sidebar"></div>
+    <div id="content-panel" class="content-panel">
+        <div id="typing-container"></div>
+    </div>
+</div>
+
+<script>
+/* Global typing interval pointer so we can stop ongoing typing */
+let typingInterval = null;
+
+/* Activate learning layout and load content for chosen topic */
+function activateLearning(topic) {
+
+    // If grid already hidden, we simply load the new content (no need to re-hide)
+    const grid = document.getElementById("grid-view");
+    const layout = document.getElementById("learning-layout");
+
+    if (grid.style.display !== "none") {
+        // First time click: move to sidebar layout
+        grid.style.display = "none";
+        layout.style.display = "flex";
+
+        // Move cards from grid into sidebar
+        const sidebar = document.getElementById("sidebar");
+        const cards = document.querySelectorAll(".learn-card");
+        cards.forEach(card => sidebar.appendChild(card));
+    }
+
+    // Ensure content panel visible
+    document.getElementById("content-panel").classList.add("active");
+
+    // Load the content (this will start typing)
+    loadContent(topic);
+}
+
+/* Typing animation with ability to stop current typing cleanly */
+function typeText(text, elementId, speed = 18) {
+    // stop previous typing if running
+    if (typingInterval) {
+        clearInterval(typingInterval);
+        typingInterval = null;
+    }
+
+    const element = document.getElementById(elementId);
+    element.innerHTML = "";          // reset immediately
+    let i = 0;
+
+    typingInterval = setInterval(() => {
+        if (i < text.length) {
+            element.innerHTML = text.substring(0, i);
+            i++;
+            // Keep the scroll at top for new text: optional
+            // element.parentElement.scrollTop = 0;
+        } else {
+            clearInterval(typingInterval);
+            typingInterval = null;
+        }
+    }, speed);
+}
+
+/* Content text for each topic */
+function loadContent(topic) {
+    let content = "";
+
+    if (topic === "credit") {
+        content =
+`<h2>🧮 Understanding Credit Scores</h2>
+<p>Learn how credit affects your finances
+
+Your credit score is a three-digit number that represents your financial reliability. It shows how likely you are to repay borrowed money. Lenders, landlords, and even employers may use it to evaluate you.
+
+Key factors that affect your score:
+
+• Payment history (35%) – Paying bills on time is the most important factor.
+
+• Credit utilization (30%) – Use less than 30% of your available credit.
+
+• Length of credit history (15%) – Older accounts improve your score.
+
+• New credit (10%) – Too many recent applications can lower your score.
+
+• Credit mix (10%) – Having both credit cards and loans helps diversify your profile.
+
+Why it matters:
+A higher score means lower interest rates, better loan approval chances, and more financial freedom. Always check your credit report regularly and dispute any errors.</p>`;
+    }
+    else if (topic === "investing") {
+        content =
+`<h2>📈 Investing for Beginners</h2>
+<p>Start with stocks and bonds
+
+Investing helps your money grow over time. Instead of letting cash sit idle, you can use it to build wealth through assets like stocks, bonds, or mutual funds.
+
+Key concepts:
+
+• Stocks – Ownership in a company; higher risk, higher reward.
+• Bonds – Loans to governments or companies; lower risk, steady returns.
+• Mutual funds/ETFs – Pool of investments managed by professionals.
+
+Beginner tips:
+
+•Start small and invest regularly.
+• Focus on long-term growth, not quick profits.
+• Diversify your portfolio to reduce risk.
+• Learn about compound interest — your earnings can grow on top of previous earnings.
+
+R emember: The earlier you start investing, the more time your money has to grow.</p>`;
+    }
+    else if (topic === "debt") {
+        content =
+`<h2>💳 Debt Management Tips,</h2>
+<p>Strategies to pay off loans faster
+
+Debt can be stressful, but with smart strategies, you can take control. Managing debt effectively improves your financial health and credit score.
+
+Practical tips:
+
+• Create a repayment plan – List all debts with their interest rates.
+
+• Pay more than the minimum – Even a little extra each month reduces the total interest.
+
+• Use the “snowball method” – Pay off the smallest debt first for motivation.
+
+• Avoid new debt – Don’t use credit cards for non-essential spending.
+
+• Negotiate with lenders – Sometimes they offer lower interest rates or settlement options.
+
+• A disciplined approach helps you achieve financial freedom faster and reduces long-term stress.</p>`;
+    }
+    else if (topic === "retirement") {
+        content =
+`<h2>🪙 Retirement Planning</h2>
+<p>Secure your future with 401(k)s and IRAs
+
+Retirement may seem far away, but planning early ensures peace of mind later. The goal is to build enough savings to cover your living expenses when you stop working.
+
+Popular retirement options:
+
+• 401(k) – Employer-sponsored plan; often includes matching contributions.
+• IRA (Individual Retirement Account) – Tax-advantaged personal savings for retirement.
+
+Tips for success:
+
+• Contribute regularly, especially if your employer matches your 401(k).
+• Diversify your investments between stocks, bonds, and funds.
+• Review your retirement plan yearly and adjust as your income grows.
+• small step today can lead to a secure and comfortable retirement tomorrow.</p>`;
+    }
+    else if (topic === "emergency") {
+        content =
+`<h2>💰 Emergency Fund Basics</h2>
+<p>Build 3–6 months of savings
+
+An emergency fund is money set aside for unexpected events like medical bills, car repairs, or job loss. It prevents you from relying on loans or credit cards during tough times.
+
+How to build it:
+
+• Start with a small goal — ₹10,000 or one month’s expenses.
+• Set up automatic transfers to a savings account.
+• Keep the fund in an easily accessible but separate account.
+• Gradually aim for 3–6 months of essential expenses.
+• A strong emergency fund gives you financial stability and peace of mind.</p>`;
+    }
+    else if (topic === "scams") {
+        content =
+`<h2>🔒 Avoiding Financial Scams</h2>
+<p>Protect yourself from fraud
+
+Financial scams are becoming more common, but you can protect yourself with awareness and caution.
+
+Common scam types:
+
+• Fake investment or lottery schemes.
+• Phishing emails and fake websites.
+• Fraudulent calls pretending to be banks or government agencies.
+
+How to stay safe:
+
+• Never share OTPs, passwords, or bank details.
+• Verify sources before making payments or clicking links.
+• Check URLs — official sites use secure connections (https).
+• Regularly monitor your accounts for suspicious activity.
+
+Remember: If something sounds too good to be true, it probably is.</p>`;
+    }
+
+    // Start typing the content into the typing-container
+    typeText(content, "typing-container", 16);
+}
+</script>
+
+{% endblock %}
